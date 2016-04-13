@@ -16,6 +16,7 @@
             <dependency id="Mono.Posix" version="4.0.0.0" />
             <dependency id="Mono.Addins" version="1.2" />
             <dependency id="IKVM.Reflection" version="7.2.4630.5" />
+            <dependency id="Microsoft.CodeAnalysis" version="1.0.0" />
         </dependencies>
 	</metadata>
 	<files>
@@ -23,5 +24,7 @@
 		<file src="main\build\bin\MonoDevelop.Core.pdb" target="lib\net45" />
 		<file src="main\build\bin\MonoDevelop.Core.xml" target="lib\net45" />
 		<file src="main\build\bin\MonoDevelop.Core.dll.config" target="lib\net45" />
+		<file src="main\build\bin\MonoDevelop.Projects.Formats.MSBuild.dll" target="lib\net45" />
+		<file src="main\build\bin\MonoDevelop.Projects.Formats.MSBuild.pdb" target="lib\net45" />
 	</files>
 </package>
