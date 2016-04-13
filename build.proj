@@ -11,8 +11,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<NuSpec Include="MonoDevelop.Core.nuspec" />
+		<NuSpec Include="MonoDevelop.Core.nuspec">
+			<Source>main\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj</Source>
+			<AdditionalProperties></AdditionalProperties>
+		</NuSpec>
 	</ItemGroup>
+
+	<Target Name="Build" DependsOnTargets="GitVersion;DownloadNuSpec;BuildSource;PackageNuSpec" />
 
 	<Target Name="DownloadNuSpec" Inputs="@(NuSpec)" Outputs="@(NuSpec)">
 		<ItemGroup>
@@ -21,8 +26,17 @@
 
 		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (New-Object System.Net.WebClient).DownloadFile('%(NuSpecUrl.Identity)', '%(NuSpecUrl.Filename)%(NuSpecUrl.Extension)') }&quot;" />
 	</Target>
-	
-	<Target Name="Build" DependsOnTargets="GitVersion;DownloadNuSpec">
+
+	<Target Name="BuildSource" DependsOnTargets="DownloadNuSpec">
+		<MSBuild Projects="%(NuSpec.Source)"
+				 Properties="%(NuSpec.AdditionalProperties)"
+				 StopOnFirstFailure="true"
+				 BuildInParallel="true"
+				 Targets="Build"
+				 Condition=" '%(NuSpec.Identity)' != '' " />
+	</Target>
+
+	<Target Name="PackageNuSpec" DependsOnTargets="BuildSource">
 		<MakeDir Directories="$(Out)" Condition=" !Exists('$(Out)') " />
 		<Exec Command='"$(NuGet)" Pack "%(NuSpec.Identity)" $(Args) -Properties Id=%(NuSpec.Filename);Version=$(Version) -OutputDirectory $(Out)' />
 	</Target>
@@ -59,6 +73,8 @@
         <!-- Update AppVeyor build # to match the actual one being used -->
         <Exec Command="appveyor UpdateBuild -Version $(Version)" Condition=" '$(APPVEYOR)' == 'true' "
               ConsoleToMSBuild="true"
-              ContinueOnError="ErrorAndContinue" />   
+              ContinueOnError="ErrorAndContinue" />
+
+		<MakeDir Directories="$(Out)" Condition=" !Exists('$(Out)') " />
 	</Target>
 </Project>
