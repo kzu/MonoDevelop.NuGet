@@ -14,7 +14,8 @@
         <dependencies>
             <dependency id="Mono.Cecil" version="0.9.5" />
             <dependency id="Mono.Posix" version="4.0.0.0" />
-            <dependency id="Mono.Addins" version="1.2" />
+            <dependency id="Mono.Addins" version="1.2.0" />
+            <dependency id="Mono.Addins.Setup" version="1.2.0" />
             <dependency id="IKVM.Reflection" version="7.2.4630.5" />
             <dependency id="Microsoft.CodeAnalysis" version="1.0.0" />
         </dependencies>
