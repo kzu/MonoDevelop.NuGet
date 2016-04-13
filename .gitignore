@@ -1,3 +1,4 @@
 .nuget
 /main
 /version.config
+/out

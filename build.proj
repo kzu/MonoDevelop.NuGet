@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="Configure" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
 		<IntermediateOutputPath>.nuget\</IntermediateOutputPath>
+		<NuGet>$(IntermediateOutputPath)nuget.exe</NuGet>
 		<PackagesPath>$(IntermediateOutputPath)packages</PackagesPath>
 		<Out Condition=" '$(Out)' == '' ">out</Out>
 		<BaseUrl>https://raw.githubusercontent.com/kzu/MonoDevelop.NuGet/master/</BaseUrl>
@@ -24,7 +24,7 @@
 	
 	<Target Name="Build" DependsOnTargets="GitVersion;DownloadNuSpec">
 		<MakeDir Directories="$(Out)" Condition=" !Exists('$(Out)') " />
-		<!--<Exec Command='"$(NuGet)" Pack "%(NuSpec.Identity)" $(Args) -Properties Id=%(NuSpec.Filename);Configuration=$(Configuration);Version=$(Version) -OutputDirectory $(Out)' />-->
+		<Exec Command='"$(NuGet)" Pack "%(NuSpec.Identity)" $(Args) -Properties Id=%(NuSpec.Filename);Version=$(Version) -OutputDirectory $(Out)' />
 	</Target>
 
 	<PropertyGroup>
@@ -53,7 +53,7 @@
 			   Condition=" '$(PendingRestore)' == 'true' "/>
 
 		<PropertyGroup>
-			<Version>$(GitSemVerMajor).$(GitSemVerMinor).0.$(GitSemVerPatch)-pre</Version>
+			<Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)-pre</Version>
 		</PropertyGroup>
         
         <!-- Update AppVeyor build # to match the actual one being used -->

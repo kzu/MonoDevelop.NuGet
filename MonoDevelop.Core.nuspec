@@ -19,9 +19,9 @@
         </dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\..\build\bin\MonoDevelop.Core.dll" target="lib\net45" />
-		<file src="..\..\..\build\bin\MonoDevelop.Core.pdb" target="lib\net45" />
-		<file src="..\..\..\build\bin\MonoDevelop.Core.xml" target="lib\net45" />
-		<file src="..\..\..\build\bin\MonoDevelop.Core.dll.config" target="lib\net45" />
+		<file src="main\build\bin\MonoDevelop.Core.dll" target="lib\net45" />
+		<file src="main\build\bin\MonoDevelop.Core.pdb" target="lib\net45" />
+		<file src="main\build\bin\MonoDevelop.Core.xml" target="lib\net45" />
+		<file src="main\build\bin\MonoDevelop.Core.dll.config" target="lib\net45" />
 	</files>
 </package>
