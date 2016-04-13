@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="Configure" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+		<IntermediateOutputPath>.nuget\</IntermediateOutputPath>
+		<PackagesPath>$(IntermediateOutputPath)packages</PackagesPath>
+		<Out Condition=" '$(Out)' == '' ">out</Out>
+		<BaseUrl>https://raw.githubusercontent.com/kzu/MonoDevelop.NuGet/master/</BaseUrl>
+		<PS Condition=" '$(PS)' == '' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<NuSpec Include="MonoDevelop.Core.nuspec" />
+	</ItemGroup>
+
+	<Target Name="DownloadNuSpec" Inputs="@(NuSpec)" Outputs="@(NuSpec)">
+		<ItemGroup>
+			<NuSpecUrl Include="@(NuSpec -> '$(BaseUrl)%(Identity)')" />
+		</ItemGroup>
+
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (New-Object System.Net.WebClient).DownloadFile('%(NuSpecUrl.Identity)', '%(NuSpecUrl.Filename)%(NuSpecUrl.Extension)') }&quot;" />
+	</Target>
+	
+	<Target Name="Build" DependsOnTargets="GitVersion;DownloadNuSpec">
+		<MakeDir Directories="$(Out)" Condition=" !Exists('$(Out)') " />
+		<!--<Exec Command='"$(NuGet)" Pack "%(NuSpec.Identity)" $(Args) -Properties Id=%(NuSpec.Filename);Configuration=$(Configuration);Version=$(Version) -OutputDirectory $(Out)' />-->
+	</Target>
+
+	<PropertyGroup>
+		<GitInfoTargets>$(PackagesPath)\GitInfo\build\GitInfo.targets</GitInfoTargets>
+		<PendingRestore Condition=" !Exists('$(GitInfoTargets)') ">true</PendingRestore>
+		<GitVersionFile>version.config</GitVersionFile>
+		<!-- Patch the regex used since MD uses a different format for the version -->
+		<_GitBaseVersionExpr>^(Version=)?(?&lt;MAJOR&gt;\d+)\.(?&lt;MINOR&gt;\d+)(\.(?&lt;PATCH&gt;\d+))?</_GitBaseVersionExpr>
+	</PropertyGroup>
+
+	<Target Name="GitVersion" /><!-- Gets overriden by the $(GitInfoTargets) if it exists -->
+	<Import Project="$(GitInfoTargets)" Condition=" Exists('$(GitInfoTargets)') " />
+
+	<Target Name="FixupGitBaseVersion" AfterTargets="_GitBaseVersionFile">
+		<!-- After retrieving the commit info for the file, we need to patch the base version 
+		     since GitInfo reads the entire version file, which isn't what we want -->
+		<PropertyGroup>
+			<VersionContents>$([System.IO.File]::ReadAllText('$(GitVersionFile)'))</VersionContents>
+			<GitBaseVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionContents), $(_GitBaseVersionExpr)).Groups['MAJOR'].Value).$([System.Text.RegularExpressions.Regex]::Match($(GitBaseVersion), $(_GitBaseVersionExpr)).Groups['MINOR'].Value).0</GitBaseVersion>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="Configure" DependsOnTargets="GitVersion">
+		<!-- Errors if nuget packages were restored during the build -->
+		<Error Text="Required build-time NuGet packages are missing. Please run the build.cmd at least once to restore them."
+			   Condition=" '$(PendingRestore)' == 'true' "/>
+
+		<PropertyGroup>
+			<Version>$(GitSemVerMajor).$(GitSemVerMinor).0.$(GitSemVerPatch)-pre</Version>
+		</PropertyGroup>
+        
+        <!-- Update AppVeyor build # to match the actual one being used -->
+        <Exec Command="appveyor UpdateBuild -Version $(Version)" Condition=" '$(APPVEYOR)' == 'true' "
+              ConsoleToMSBuild="true"
+              ContinueOnError="ErrorAndContinue" />   
+	</Target>
+</Project>

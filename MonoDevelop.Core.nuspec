@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+	<metadata>
+		<id>MonoDevelop.Core</id>
+		<version>6.1</version>
+		<title>MonoDevelop.Core</title>
+		<authors>MonoDevelop</authors>
+		<owners>kzu</owners>
+		<projectUrl>https://github.com/mono/monodevelop/</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>MonoDevelop.Core</summary>
+		<description>MonoDevelop.Core</description>
+		<copyright>2015 © MonoDevelop</copyright>
+        <dependencies>
+            <dependency id="Mono.Cecil" version="0.9.5" />
+            <dependency id="Mono.Posix" version="4.0.0.0" />
+            <dependency id="Mono.Addins" version="1.2" />
+            <dependency id="IKVM.Reflection" version="7.2.4630.5" />
+        </dependencies>
+	</metadata>
+	<files>
+		<file src="..\..\..\build\bin\MonoDevelop.Core.dll" target="lib\net45" />
+		<file src="..\..\..\build\bin\MonoDevelop.Core.pdb" target="lib\net45" />
+		<file src="..\..\..\build\bin\MonoDevelop.Core.xml" target="lib\net45" />
+		<file src="..\..\..\build\bin\MonoDevelop.Core.dll.config" target="lib\net45" />
+	</files>
+</package>
